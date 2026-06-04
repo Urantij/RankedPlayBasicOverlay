@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>RankedPlay</title>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!--        YOUR STYLES HERE        -->
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/odometr.css" />
+</head>
+
+<body>
+  <div class="main">
+    <div id="everything" style="position: absolute; left: 0px; top: 0px; display: flex; width: 100%;">
+      <!-- you -->
+      <div class="player-panel">
+        <div style="display: flex; flex-direction: column;">
+          <div class="upper-panel">
+            <div id="you-avatar" class="ava" style="background-color: gray;"></div>
+            <span id="you-name" class="name" style="margin-left: var(--avatar-padding);">You</span>
+            <span id="you-score" class="score" style="margin-left: auto;">0</span>
+          </div>
+          <div style="display: grid;">
+            <div class="bar" style="background-color: gray; grid-area: 1 / 1;"></div>
+            <div id="you-hp-bar" class="bar"
+              style="width: 100%; background-color: var(--hp-bar-color); grid-area: 1 / 1;"></div>
+            <div id="you-damaged-bar" class="bar" style="width: 0%; margin-right: 0%; justify-self: end;
+              background-color: var(--hp-bar-damaged-color); grid-area: 1 / 1;"></div>
+            <span id="you-health" class="health" style="grid-area: 1 / 1;">1.000.000</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; margin-left: var(--stat-margin); justify-content: center;">
+          <span id="you-combo" class="combo">101x</span>
+          <span id="you-accuracy" class="accuracy">99.5%</span>
+        </div>
+      </div>
+
+      <!-- score -->
+      <div style="flex-grow: 1; text-align: center; place-content: center;">
+        <span id="damage" class="damage-text">0</span>
+      </div>
+
+      <!-- them -->
+      <div class="player-panel" style="margin-left: auto;">
+        <div style="display: flex; flex-direction: column; margin-right: var(--stat-margin); justify-content: center;">
+          <span id="them-combo" class="combo" style="align-self: flex-end;">101x</span>
+          <span id="them-accuracy" class="accuracy" style="align-self: flex-end;">99.5%</span>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <div class="upper-panel">
+            <span id="them-score" class="score" style="margin-right: auto;">0</span>
+            <span id="them-name" class="name" style="margin-right: var(--avatar-padding);">Them</span>
+            <div id="them-avatar" class="ava" style="background-color: gray;"></div>
+          </div>
+          <div style="display: grid;">
+            <div class="bar" style="background-color: gray; grid-area: 1 / 1;"></div>
+            <div id="them-hp-bar" class="bar" style="width: 100%; justify-self: end;
+              background-color: var(--hp-bar-color); grid-area: 1 / 1;"></div>
+            <div id="them-damaged-bar" class="bar" style="width: 0%; margin-left: 0%;
+              background-color: var(--hp-bar-damaged-color); grid-area: 1 / 1;"></div>
+            <span id="them-health" class="health" style="grid-area: 1 / 1;">1.000.000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- <div class="test-style">
+      <span id="h100"></span>
+      <span>x100</span>
+    </div>
+    <div class="test-style">
+      <span id="h50"></span>
+      <span>x50</span>
+    </div>
+    <div class="test-style">
+      <span id="h0"></span>
+      <span>xMiss</span>
+    </div>
+    <div class="test-style">
+      <span id="pp" class="odometer"></span>
+      <span>pp</span>
+    </div>
+    <div class="test-style">
+      <span id="accuracy"></span>
+      <span>%</span>
+    </div> -->
+  </div>
+
+
+
+  <!--        OTHER SCRIPTS        -->
+  <script src="js/countUp.js"></script>
+  <script src="js/odometr.js"></script>
+
+
+
+  <!--        YOUR COUNTER LOGIC FILES        -->
+  <script type="module" src="index.js"></script>
+</body>
+
+</html>

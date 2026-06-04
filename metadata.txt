@@ -1,0 +1,8 @@
+Usecase: obs-overlay
+Name:  RankedPlayBasicOverlay
+Version: 1
+Author:  Urantij
+CompatibleWith:  tosu
+Resolution:  1600 x 400
+authorLinks:  https://github.com/Urantij
+Notes: dedge

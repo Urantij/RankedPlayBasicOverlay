@@ -1,0 +1,111 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  color: white;
+  font-size: 40px;
+  background-color: black;
+  overflow: hidden;
+}
+
+.test-style {
+  display: flex;
+  align-items: center;
+}
+
+.test-style>span:nth-child(2) {
+  /* font-size: 0.8em; */
+  color: #558cc8;
+}
+
+:root {
+  --bar-width: 450px;
+  --bar-height: 20px;
+  --avatar-dimensions: 40px;
+  --avatar-padding: 10px;
+
+  --hp-bar-back-color: #dcdcdc;
+  --hp-bar-color: #a72727;
+  --hp-bar-damaged-color: white;
+
+  --stat-margin: 7px;
+
+  --positive-damage-color: green;
+  --negative-damage-color: red;
+}
+
+.player-panel {
+  display: flex;
+  flex-direction: row;
+}
+
+.upper-panel {
+  display: flex;
+}
+
+.bar {
+  width: var(--bar-width);
+  height: var(--bar-height);
+}
+
+.ava {
+  width: var(--avatar-dimensions);
+  height: var(--avatar-dimensions);
+  /* padding-top: var(--avatar-padding); */
+  /* padding-bottom: var(--avatar-padding); */
+  align-content: center;
+}
+
+.name {
+  font-size: 20px;
+  color: #dcdcdc;
+  align-content: center;
+}
+
+.score {
+  font-size: 28px;
+  color: #dcdcdc;
+  align-content: center;
+}
+
+.health {
+  font-size: 14px;
+  color: black;
+  padding-left: 10px;
+  align-self: center;
+}
+
+.combo {
+  font-size: 14px;
+}
+
+.accuracy {
+  font-size: 14px;
+}
+
+.damage-text {
+  font-size: 27px;
+  color: #dcdcdc;
+}
+
+.damage-text.positive {
+  color: var(--positive-damage-color);
+}
+
+.damage-text.negative {
+  color: var(--negative-damage-color);
+}
+
+.deadspace {
+  grid-area: 1 / 1;
+}
+
+.is-hidden {
+  display: none !important;
+}
