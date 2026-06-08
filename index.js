@@ -253,13 +253,6 @@ function socketDataProcess(data) {
     cache.them.damageMultiplier = them.info.damageMultiplier;
     cache.damageMultiplier = data.rankedPlay.damageMultiplier;
 
-    const youBoard = data.leaderboard.filter(l => l.id === you.id)[0];
-    const themBoard = data.leaderboard.filter(l => l.id === them.id)[0];
-
-    if (!youBoard || !themBoard) {
-      return;
-    }
-
     if (!isRankedState) {
       isRankedState = true;
 
@@ -282,6 +275,12 @@ function socketDataProcess(data) {
         hideElement(everythingElement);
         smallClean();
       }
+    }
+
+    const youBoard = data.leaderboard.filter(l => l.id === you.id)[0];
+    const themBoard = data.leaderboard.filter(l => l.id === them.id)[0];
+    if (!youBoard || !themBoard) {
+      return;
     }
 
     // 7 = gameplay
