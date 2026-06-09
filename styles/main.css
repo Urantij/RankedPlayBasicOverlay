@@ -60,6 +60,7 @@ body {
   /* padding-top: var(--avatar-padding); */
   /* padding-bottom: var(--avatar-padding); */
   align-content: center;
+  background-size: contain;
 }
 
 .name {

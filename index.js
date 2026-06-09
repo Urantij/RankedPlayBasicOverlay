@@ -7,7 +7,6 @@ const flatDamageBonus = 50000;
 
 let isRankedState = false;
 
-let youId = -1;
 let rankedStage = -1;
 
 let scoreChanged = false;
@@ -17,6 +16,7 @@ const isHiddenClassName = "is-hidden";
 // cache values here to prevent constant updating
 const cache = {
   you: {
+    id: -1,
     name: "You",
     hp: defaultHp,
     score: 0,
@@ -26,6 +26,7 @@ const cache = {
 
   },
   them: {
+    id: -1,
     name: "Them",
     hp: defaultHp,
     score: 0,
@@ -46,7 +47,8 @@ const pageCounts = {
     accuracy: new CountUp('you-accuracy', 0, 0, 2, .2, { useEasing: true, separator: " ", decimal: ".", suffix: '%' }),
 
     hpBar: undefined,
-    damageBar: undefined
+    damageBar: undefined,
+    avatar: undefined
   },
   them: {
     hp: new CountUp('them-health', 0, 0, 0, .5, { useEasing: true, useGrouping: true, separator: " " }),
@@ -55,7 +57,8 @@ const pageCounts = {
     accuracy: new CountUp('them-accuracy', 0, 0, 2, .2, { useEasing: true, separator: " ", decimal: ".", suffix: '%' }),
 
     hpBar: undefined,
-    damageBar: undefined
+    damageBar: undefined,
+    avatar: undefined
   },
   damage: new CountUp('damage', 0, 0, 0, .2, { useEasing: true, useGrouping: true, separator: "." }),
 };
@@ -68,8 +71,10 @@ let everythingElement = undefined;
 document.addEventListener("DOMContentLoaded", () => {
   pageCounts.you.hpBar = document.getElementById("you-hp-bar");
   pageCounts.you.damageBar = document.getElementById("you-damaged-bar");
+  pageCounts.you.avatar = document.getElementById("you-avatar");
   pageCounts.them.hpBar = document.getElementById("them-hp-bar");
   pageCounts.them.damageBar = document.getElementById("them-damaged-bar");
+  pageCounts.them.avatar = document.getElementById("them-avatar");
 
   damageElement = document.getElementById("damage");
   youNameElement = document.getElementById("you-name");
@@ -86,17 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }, [
     'rankedPlay',
     'profile',
-    'leaderboard'
+    'leaderboard',
+    'room'
   ]);
 });
 
 function clear() {
-  youId = -1;
   rankedStage = -1;
 
+  cache.you.id = -1;
   cache.you.hp = 1000000;
   cache.you.damageMultiplier = 0;
 
+  cache.them.id = -1;
   cache.them.name = "Them";
   cache.them.hp = 1000000;
   cache.them.damageMultiplier = 0;
@@ -118,6 +125,9 @@ function clear() {
     pageCounts.them.damageBar.style.width = "0%";
     pageCounts.them.damageBar.style["margin-left"] = "0%";
   }
+
+  pageCounts.you.avatar.style.removeProperty('background-image');
+  pageCounts.them.avatar.style.removeProperty('background-image');
 
   smallClean();
 }
@@ -162,7 +172,7 @@ function smallClean() {
 }
 
 /**
-   * @param {object} leaderboard
+   * @param {object | undefined} leaderboard
    * @param {'left' | 'right'} side
    */
 function updateThings(cache, socketData, pageData, leaderboard, side) {
@@ -179,19 +189,21 @@ function updateThings(cache, socketData, pageData, leaderboard, side) {
     pageData.damageBar.style[margin] = `${100 - healthPercent}%`;
   }
 
-  if (cache.score !== leaderboard.score) {
-    cache.score = leaderboard.score;
-    pageData.score.update(cache.score);
+  if (leaderboard) {
+    if (cache.score !== leaderboard.score) {
+      cache.score = leaderboard.score;
+      pageData.score.update(cache.score);
 
-    scoreChanged = true;
-  }
-  if (cache.accuracy !== leaderboard.accuracy) {
-    cache.accuracy = leaderboard.accuracy;
-    pageData.accuracy.update(cache.accuracy);
-  }
-  if (cache.combo !== leaderboard.combo) {
-    cache.combo = leaderboard.combo.current;
-    pageData.combo.update(cache.combo);
+      scoreChanged = true;
+    }
+    if (cache.accuracy !== leaderboard.accuracy) {
+      cache.accuracy = leaderboard.accuracy;
+      pageData.accuracy.update(cache.accuracy);
+    }
+    if (cache.combo !== leaderboard.combo) {
+      cache.combo = leaderboard.combo.current;
+      pageData.combo.update(cache.combo);
+    }
   }
 }
 
@@ -237,30 +249,65 @@ function socketDataProcess(data) {
       return;
     }
 
-    if (youId === -1) {
-      youId = data.profile.id;
+    if (cache.you.id === -1) {
+      cache.you.id = data.profile.id;
     }
 
     // по идее рано это всё всасывать ну да похуй
 
-    const you = data.rankedPlay.users.filter(u => u.id === youId)[0];
+    if (!data.room) {
+      return;
+    }
+
+    const you = data.rankedPlay.users.find(u => u.id === cache.you.id);
     if (!you) {
       return;
     }
-    const them = data.rankedPlay.users.filter(u => u.id !== youId)[0];
+    const them = data.rankedPlay.users.find(u => u.id !== cache.you.id);
+
+    if (!them && !isRankedState)
+      return;
+
+    if (!them) {
+      them = {
+        id: cache.them.id,
+        info: {
+          life: cache.them.hp,
+          damageMultiplier: cache.them.damageMultiplier
+        }
+      };
+    }
 
     cache.you.damageMultiplier = you.info.damageMultiplier;
     cache.them.damageMultiplier = them.info.damageMultiplier;
     cache.damageMultiplier = data.rankedPlay.damageMultiplier;
 
     if (!isRankedState) {
+      // первый раз подождём всех в руме
+      const youRoom = data.room.users.find(u => u.id === cache.you.id);
+      const themRoom = data.room.users.find(u => u.id !== cache.you.id);
+      if (!youRoom || !themRoom) {
+        return;
+      }
       isRankedState = true;
 
-      cache.you.name = youBoard.name;
-      cache.them.name = themBoard.name;
+      cache.you.id = you.id;
+      cache.you.name = youRoom.info.username;
+      cache.them.id = them.id;
+      cache.them.name = themRoom.info.username;
 
       youNameElement.textContent = cache.you.name;
       themNameElement.textContent = cache.them.name;
+
+      if (data.room) {
+
+        if (youRoom?.info.avatarUrl) {
+          pageCounts.you.avatar.style['background-image'] = `url(${youRoom.info.avatarUrl})`;
+        }
+        if (themRoom?.info.avatarUrl) {
+          pageCounts.them.avatar.style['background-image'] = `url(${themRoom.info.avatarUrl})`;
+        }
+      }
 
       unHideElement(everythingElement);
     }
@@ -273,6 +320,8 @@ function socketDataProcess(data) {
       }
       else {
         hideElement(everythingElement);
+        updateThings(cache.you, you.info, pageCounts.you, undefined, 'left');
+        updateThings(cache.them, them.info, pageCounts.them, undefined, 'right');
         smallClean();
       }
     }
@@ -295,7 +344,6 @@ function socketDataProcess(data) {
 
         if (newScoreDiff !== cache.scoreDiff) {
 
-          console.log(`${newScoreDiff} ${cache.damageMultiplier} ${newScoreDiff > 0 ? cache.you.damageMultiplier : cache.them.damageMultiplier}`)
           const damage = newScoreDiff === 0 ? 0 :
             calculateDamage(Math.abs(newScoreDiff), cache.damageMultiplier, newScoreDiff > 0 ? cache.you.damageMultiplier : cache.them.damageMultiplier);
 
