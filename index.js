@@ -299,14 +299,11 @@ function socketDataProcess(data) {
       youNameElement.textContent = cache.you.name;
       themNameElement.textContent = cache.them.name;
 
-      if (data.room) {
-
-        if (youRoom?.info.avatarUrl) {
-          pageCounts.you.avatar.style['background-image'] = `url(${youRoom.info.avatarUrl})`;
-        }
-        if (themRoom?.info.avatarUrl) {
-          pageCounts.them.avatar.style['background-image'] = `url(${themRoom.info.avatarUrl})`;
-        }
+      if (youRoom.info.avatarUrl) {
+        pageCounts.you.avatar.style['background-image'] = `url(${youRoom.info.avatarUrl})`;
+      }
+      if (themRoom.info?.avatarUrl) {
+        pageCounts.them.avatar.style['background-image'] = `url(${themRoom.info.avatarUrl})`;
       }
 
       unHideElement(everythingElement);
@@ -327,9 +324,19 @@ function socketDataProcess(data) {
     }
 
     const youBoard = data.leaderboard.filter(l => l.id === you.id)[0];
-    const themBoard = data.leaderboard.filter(l => l.id === them.id)[0];
-    if (!youBoard || !themBoard) {
+    let themBoard = data.leaderboard.filter(l => l.id === them.id)[0];
+    if (!youBoard) {
       return;
+    }
+
+    if (!themBoard) {
+      themBoard = {
+        score: cache.them.score,
+        accuracy: cache.them.accuracy,
+        combo: {
+          current: cache.them.combo
+        }
+      };
     }
 
     // 7 = gameplay
