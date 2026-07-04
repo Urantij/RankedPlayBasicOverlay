@@ -271,15 +271,13 @@ function socketDataProcess(data) {
     if (!them) {
       them = {
         id: cache.them.id,
-        info: {
-          life: cache.them.hp,
-          damageMultiplier: cache.them.damageMultiplier
-        }
+        life: cache.them.hp,
+        damageMultiplier: cache.them.damageMultiplier
       };
     }
 
-    cache.you.damageMultiplier = you.info.damageMultiplier;
-    cache.them.damageMultiplier = them.info.damageMultiplier;
+    cache.you.damageMultiplier = you.damageMultiplier;
+    cache.them.damageMultiplier = them.damageMultiplier;
     cache.damageMultiplier = data.rankedPlay.damageMultiplier;
 
     if (!isRankedState) {
@@ -317,8 +315,8 @@ function socketDataProcess(data) {
       }
       else {
         hideElement(everythingElement);
-        updateThings(cache.you, you.info, pageCounts.you, undefined, 'left');
-        updateThings(cache.them, them.info, pageCounts.them, undefined, 'right');
+        updateThings(cache.you, you, pageCounts.you, undefined, 'left');
+        updateThings(cache.them, them, pageCounts.them, undefined, 'right');
         smallClean();
       }
     }
@@ -342,8 +340,8 @@ function socketDataProcess(data) {
     // 7 = gameplay
     if (rankedStage === 7) {
 
-      updateThings(cache.you, you.info, pageCounts.you, youBoard, 'left');
-      updateThings(cache.them, them.info, pageCounts.them, themBoard, 'right');
+      updateThings(cache.you, you, pageCounts.you, youBoard, 'left');
+      updateThings(cache.them, them, pageCounts.them, themBoard, 'right');
 
       if (scoreChanged) {
 
