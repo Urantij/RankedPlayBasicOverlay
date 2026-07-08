@@ -13,6 +13,12 @@ let scoreChanged = false;
 
 const isHiddenClassName = "is-hidden";
 
+// короче, когда стартует новая карта, инфа из лидерборды всё ещё хранит стейт из прошлой карты. нужно как то дождаться её обнуления
+// план такой. когда начинается плей парт карты, не обновлять лидерборд, пока не поймаем 0 0 стейт в памяти, ну или пока не пройдёт 1 секунда (на всякий)
+const cleanTimeout = 1000;
+let waitingForTheCleanState = false;
+let cleanStateResetTimer = undefined;
+
 // cache values here to prevent constant updating
 const cache = {
   you: {
@@ -129,6 +135,8 @@ function clear() {
   pageCounts.you.avatar.style.removeProperty('background-image');
   pageCounts.them.avatar.style.removeProperty('background-image');
 
+  dropClean();
+
   smallClean();
 }
 
@@ -168,6 +176,25 @@ function smallClean() {
   }
   if (pageCounts.them.damageBar) {
     pageCounts.them.damageBar.style.width = "0%";
+  }
+}
+
+function setClean() {
+  waitingForTheCleanState = true;
+  if (cleanStateResetTimer) {
+    clearTimeout(cleanStateResetTimer);
+  }
+  cleanStateResetTimer = setTimeout(() => {
+    waitingForTheCleanState = false;
+    cleanStateResetTimer = undefined;
+  }, cleanTimeout);
+}
+
+function dropClean() {
+  waitingForTheCleanState = false;
+  if (cleanStateResetTimer) {
+    clearTimeout(cleanStateResetTimer);
+    cleanStateResetTimer = undefined;
   }
 }
 
@@ -312,12 +339,16 @@ function socketDataProcess(data) {
 
       if (rankedStage === 7) {
         unHideElement(everythingElement);
+
+        setClean();
       }
       else {
         hideElement(everythingElement);
         updateThings(cache.you, you, pageCounts.you, undefined, 'left');
         updateThings(cache.them, them, pageCounts.them, undefined, 'right');
         smallClean();
+
+        dropClean();
       }
     }
 
@@ -339,6 +370,14 @@ function socketDataProcess(data) {
 
     // 7 = gameplay
     if (rankedStage === 7) {
+      if (waitingForTheCleanState) {
+        if (youBoard.score === 0 && themBoard.score === 0) {
+          dropClean();
+        }
+        else {
+          return;
+        }
+      }
 
       updateThings(cache.you, you, pageCounts.you, youBoard, 'left');
       updateThings(cache.them, them, pageCounts.them, themBoard, 'right');
