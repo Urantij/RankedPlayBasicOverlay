@@ -317,18 +317,18 @@ function socketDataProcess(data) {
       isRankedState = true;
 
       cache.you.id = you.id;
-      cache.you.name = youRoom.info.username;
+      cache.you.name = youRoom.username;
       cache.them.id = them.id;
-      cache.them.name = themRoom.info.username;
+      cache.them.name = themRoom.username;
 
       youNameElement.textContent = cache.you.name;
       themNameElement.textContent = cache.them.name;
 
-      if (youRoom.info.avatarUrl) {
-        pageCounts.you.avatar.style['background-image'] = `url(${youRoom.info.avatarUrl})`;
+      if (youRoom.avatarUrl) {
+        pageCounts.you.avatar.style['background-image'] = `url(${youRoom.avatarUrl})`;
       }
-      if (themRoom.info?.avatarUrl) {
-        pageCounts.them.avatar.style['background-image'] = `url(${themRoom.info.avatarUrl})`;
+      if (themRoom.avatarUrl) {
+        pageCounts.them.avatar.style['background-image'] = `url(${themRoom.avatarUrl})`;
       }
 
       unHideElement(everythingElement);
